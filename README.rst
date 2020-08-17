@@ -3,14 +3,20 @@
 Structure from Motion workflows
 ============
 
-A series of shell and python scripts for Structure from motion processing using the MicMac library. 
+A series of shell and python scripts for Structure from motion. Documentation accompanying this is available.
+
+**Before you use - there are merits/pitfalls to the open source and proprietary SfM applications, the material does not make claim to one being superior to the other.**
+
+- For a GUI-based, proprietary solutions, see the QQ Ktp documentation on Agisoft Metashape.
+
+- For a GUI-based, open source alternatives see the same docs for OpenDroneMap.
 
 
 **The scripts**
 
 1. Clone/download/unzip this repo to wherever you wish
 
-2. Add the script folders to your path e.g your .bashrc or .bash_profile
+2. Add the script folders to your path e.g your .bashrc or .bash_profile. 
 
 .. code-block:: bash
     
@@ -21,7 +27,7 @@ A series of shell and python scripts for Structure from motion processing using 
     export PATH=/my/path/Sfm:$PATH
     
     export PATH=/my/path/Sfm/substages:$PATH
-    
+
 3. Make them executable
 
 .. code-block:: bash
@@ -33,6 +39,7 @@ A series of shell and python scripts for Structure from motion processing using 
 .. code-block:: bash
     . ~/.bashrc
 
+**If you are a windows user (commiserations), the syntax in these scripts will not work as it is not Unix environment. In this eventuality, use cygwin or docker.** 
 
 Dependencies
 ~~~~~~~~~~~~
@@ -59,9 +66,9 @@ See MicMac install instructions here:
 
 https://micmac.ensg.eu/index.php/Install
 
-If you have a lot of CPU cores, it is almost always better not to bother with GPU aided processing on MicMac in its current state as with lots of jobs/images it will overload the GPU memory.
+**If you have a lot of CPU cores, it is almost always better not to bother with GPU aided processing on MicMac in its current state as with lots of jobs/images it will overload the GPU memory.**
 
-The only case in which I have found GPU processing to be any use is with my MaltBatch.py script - but you have to manage the no of CPU cores and watch image size/numbers.
+The only case in which I have found GPU processing to be any use is with my MaltBatch.py (deprecated)  script - but you have to manage the no of CPU cores and watch image size/numbers.
 
 If you have relatively few CPU cores, then GPU accerallation is probably more meritful.  
 
@@ -176,7 +183,7 @@ Deprecated but potentially useful
 
 - It is internal to gridproc
 
-**PimsBatch.py (DEPRECATED)**
+**PimsBatch.py**
 
 - This processes data in tiles/chunks using the PIMs algorithm
 
@@ -184,7 +191,7 @@ Deprecated but potentially useful
 
 - Orthomosaic the output of any of the above including the batch scripts
 
-**MntBatch.py (DEPRECATED)**
+**MntBatch.py**
 
 - This processes data in tiles/chunks using the PIMs2MNT algorithm
 
