@@ -103,25 +103,21 @@ Install OSSIM via tha ubuntu GIS or equivalent repo
 Contents
 ~~~~~~~~~~~~~~~~~
 
-All in one scripts
+All in one script
 ~~~~~~~~~~~~~~~~~~
 
 These process the entire Sfm workflow
 
 **sfm.sh**
 
-- A script to preform the entire SfM workfow producing DSM, Ortho-mosaic & point cloud
-
-**gridproc.sh (DEPRECATED)**
-
-- Process a large dataset (typically 1000s of images+) in tiles 
+- A script to preform the entire SfM workfow producing DSM, Ortho-mosaic & point cloud.
 
 
 Sub-stage scripts
 ~~~~~~~~~~~~~~~~~
 
 These divide the workflow into Orientation, dense cloud/DSM processing and mosaic generation. 
-All are internal to the complete workflows.
+All are internal to the complete workflows. These are the recommended
 
 
 **Orientation.sh**
@@ -134,29 +130,8 @@ All are internal to the complete workflows.
 
 - Processes dense cloud using either the PIMs or Malt-based algorithms, ortho-mosaic, point-cloud and georefs everything
 
-**MaltBatch.py**
-
-- This processes data in tiles/chunks using the Malt algorithm, where GPU support is optional
-
-- It is internal to gridproc
-
-**PimsBatch.py**
-
-- This processes data in tiles/chunks using the PIMs algorithm
-
-- this script is an internal option in DronePIMs.sh
-
-**orthomosaic.sh**
-
-- Orthomosaic the output of any of the above including the batch scripts
-
-**MntBatch.py**
-
-- This processes data in tiles/chunks using the PIMs2MNT algorithm
-
-With a big dataset - I have found the Ortho generation fills up the HD with 1000s of images.
-Hence, this tiles the ortho generation, assuming you have already globbaly processed the data with PIMs algorithm, and potentially the DSM with PIMs2MNT (without the ortho option).
-
+For use with Micasense Red-Edge
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **MSpec.py**
 
 - This calculates surface reflectance and aligns the offset band imagery for the MicaSense RedEdge and is to be used prior to the usual processing
@@ -184,8 +159,37 @@ type -h to get help on each script e.g. :
 
 .. code-block:: bash
 
-   Drone.sh -help
+   sfm.sh -help
 
+Deprecated but potentially useful
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Deprecated but here for information/adaptation - not maintained**
+
+**gridproc.sh **
+
+- Process a large dataset (typically 1000s of images+) in tiles. 
+
+**MaltBatch.py**
+
+- This processes data in tiles/chunks using the Malt algorithm, where GPU support is optional
+
+- It is internal to gridproc
+
+**PimsBatch.py (DEPRECATED)**
+
+- This processes data in tiles/chunks using the PIMs algorithm
+
+**orthomosaic.sh**
+
+- Orthomosaic the output of any of the above including the batch scripts
+
+**MntBatch.py (DEPRECATED)**
+
+- This processes data in tiles/chunks using the PIMs2MNT algorithm
+
+With a big dataset - I have found the Ortho generation fills up the HD with 1000s of images.
+Hence, this tiles the ortho generation, assuming you have already globbaly processed the data with PIMs algorithm, and potentially the DSM with PIMs2MNT (without the ortho option).
 
 
 Thanks
