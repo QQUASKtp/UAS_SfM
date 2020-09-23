@@ -10,7 +10,7 @@
 
 
 
-while getopts ":e:a:m:u:z:i:d:n:r:o:h:" x; do
+while getopts ":e:a:m:u:z:i:d:n:r:o:x:h:" x; do
   case $x in
     h) 
       echo "Process dense cloud using either PIMs or Malt."
@@ -24,7 +24,8 @@ while getopts ":e:a:m:u:z:i:d:n:r:o:h:" x; do
       echo "-d DEQ           : Degree of radiometric eq between images during mosaicing (See mm3d Tawny)"
       echo "-n CORE          : Number of cores to use - likely best to stick with physical ones"
       echo "-r zreg          : zreg term - context dependent "     
-      echo "-o orth          : do ortho -True or False "           
+      echo "-o orth          : do ortho -True or False "  
+      echo "-x dsc          : do DSM -True or False "          
       echo "-h	             : displays this message and exits."
       echo " "
       exit 0 
@@ -57,7 +58,10 @@ while getopts ":e:a:m:u:z:i:d:n:r:o:h:" x; do
       zreg=$OPTARG
       ;;
     o)
-      orth=true
+      orth=$OPTARG
+      ;;
+    x)
+      dsm=$OPTARG
       ;;
     \?)
       echo "dense_cloud.sh: Invalid option: -$OPTARG" >&1
@@ -171,7 +175,7 @@ else
         
         echo "doing dsm and ortho"
     	
-    	mm3d Malt $Algorithm ".*.$EXTENSION" Ground_UTM UseGpu=0 EZA=1 DoOrtho=1 DefCor=0 #NbProc=$CpuCount
+    	mm3d Malt $Algorithm ".*.$EXTENSION" Ground_UTM UseGpu=0 EZA=1 DoOrtho=1 DefCor=0 DoMEC=$dsm #NbProc=$CpuCount
     
         mm3d Tawny Ortho-MEC-Malt RadiomEgal=$egal DegRap=$DEQ
 
