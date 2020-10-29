@@ -9,7 +9,7 @@ while getopts ":e:a:c:m:u:q:d:i:t:h:" x; do
   case $x in
     h) 
       echo "Complete SfM process outputting DSM, Ortho-Mosaic and Point Cloud."
-      echo "Usage: sfm.sh -e JPG -a Forest -m PIMs -u '30 +north' -q 1 -d 1 -i 2000 -c mycsv.csv"
+      echo "Usage: mspec_sfm.sh -e JPG -a Forest -m PIMs -u '30 +north' -q 1 -d 1 -i 2000 -c mycsv.csv"
       echo "-e EXTENSION     : image file type (JPG, jpg, TIF, png..., default=JPG)."
       echo "-a Algorithm     : type of algorithm eg Ortho, UrbanMNE for Malt or MicMac, BigMac, QuickMac, Forest, Statue "
       echo "-c CALIB         : Camera calibration model - e.g. RadialBasic, Fraser etc"
@@ -85,6 +85,8 @@ echo "</SystemeCoord>                                                           
 # mogrify -resize 30% *.JPG
 #mogrify -resize 2000 *.JPG
 
+mv RGB/*.tif $PWD
+
 if [  -f "${CSV}" ]; then 
     echo "using csv file ${CSV}"  
     mm3d OriConvert OriTxtInFile ${CSV} RAWGNSS_N ChSys=DegreeWGS84@SysUTM.xml MTD1=1  NameCple=FileImagesNeighbour.xml CalcV=1
@@ -143,8 +145,6 @@ fi
 mm3d AperiCloud .*${EXTENSION} Ground_UTM
 
 
-mv RGB/*.tif pwd
-
 dense_cloud.sh -e ${EXTENSION} -a ${Algorithm} -m ${MODE} -i ${egal} -d ${DEQ} -o 1
 
 mv *.tif RGB
@@ -152,9 +152,9 @@ mv *.tif RGB
 mv OUTPUT/OrthoImage_geotif.tif OUTPUT/RGB.tif
 rm -rf OUTPUT/OrthoImage_geotif.tif
 
-mv RRENir/*.tif pwd
+mv RRENir/*.tif $PWD
 
-dense_cloud.sh -e ${EXTENSION} -a ${Algorithm} -m ${MODE} -i ${egal} -d ${DEQ} -o 1 -x 1
+dense_cloud.sh -e ${EXTENSION} -a ${Algorithm} -m ${MODE} -i ${egal} -d ${DEQ} -o 1 -x 0
 
 mv *.tif RRENir
 
