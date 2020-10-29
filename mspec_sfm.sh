@@ -5,18 +5,16 @@
 
 #https://github.com/Ciaran1981/Sfm
 
-while getopts ":e:a:c:m:u:q:d:i:t:h:" x; do
+while getopts ":e:a:c:m:u:i:t:h:" x; do
   case $x in
     h) 
       echo "Complete SfM process outputting DSM, Ortho-Mosaic and Point Cloud."
-      echo "Usage: mspec_sfm.sh -e JPG -a Forest -m PIMs -u '30 +north' -q 1 -d 1 -i 2000 -c mycsv.csv"
+      echo "Usage: mspec_sfm.sh -e JPG -a Forest -m PIMs -u '30 +north' -i 2000 -c Fraser -t mycsv.csv"
       echo "-e EXTENSION     : image file type (JPG, jpg, TIF, png..., default=JPG)."
       echo "-a Algorithm     : type of algorithm eg Ortho, UrbanMNE for Malt or MicMac, BigMac, QuickMac, Forest, Statue "
       echo "-c CALIB         : Camera calibration model - e.g. RadialBasic, Fraser etc"
       echo "-m MODE          : Either Malt or PIMs - mandatory"
       echo "-u UTMZONE       : UTM Zone of area of interest. Takes form 'NN +north(south)'"
-      echo "-q egal          : radiometric eq (See mm3d Tawny)"
-      echo "-d DEQ           : Degree of radiometric eq between images during mosaicing (See mm3d Tawny)" 
       echo "-i SIZE          : image resize for processing (OPTIONAL, but recommend half long axis of image) "  
       echo "-t CSV           : Optional (no need if using exif GPS) - text file usually csv with mm3d formatting with image names and gps coords "          
       echo "-h	             : displays this message and exits."
@@ -38,12 +36,6 @@ while getopts ":e:a:c:m:u:q:d:i:t:h:" x; do
 	u)
       UTM=$OPTARG
       ;;
-	q)
-      egal=$OPTARG
-      ;;
-	d)
-      DEQ=$OPTARG  
-      ;;
  	i)
       SIZE=${OPTARG}
       ;;            
@@ -63,7 +55,7 @@ done
 
 shift $((OPTIND-1))
 
-echo "params chosen are: -e ${EXTENSION} -a ${Algorithm} -c ${CALIB} -m ${MODE} -u ${UTM} -q ${egal} -d ${DEQ} -i ${SIZE} -c ${CSV}"
+echo "params chosen are: -e ${EXTENSION} -a ${Algorithm} -c ${CALIB} -m ${MODE} -u ${UTM} -i ${SIZE} -c ${CSV}"
  
 
 
@@ -145,7 +137,7 @@ fi
 mm3d AperiCloud .*${EXTENSION} Ground_UTM
 
 
-dense_cloud.sh -e ${EXTENSION} -a ${Algorithm} -m ${MODE} -i ${egal} -d ${DEQ} -o 1
+dense_cloud.sh -e ${EXTENSION} -a ${Algorithm} -m ${MODE} -x 1
 
 mv *.tif RGB
 
@@ -154,7 +146,7 @@ rm -rf OUTPUT/OrthoImage_geotif.tif
 
 mv RRENir/*.tif $PWD
 
-dense_cloud.sh -e ${EXTENSION} -a ${Algorithm} -m ${MODE} -i ${egal} -d ${DEQ} -o 1 -x 0
+dense_cloud.sh -e ${EXTENSION} -a ${Algorithm} -m ${MODE}  -x 0
 
 mv *.tif RRENir
 
