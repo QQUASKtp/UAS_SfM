@@ -9,14 +9,14 @@ while getopts ":e:a:c:m:u:i:t:h:" x; do
   case $x in
     h) 
       echo "Complete SfM process outputting DSM, Ortho-Mosaic and Point Cloud."
-      echo "Usage: mspec_sfm.sh -e JPG -a Forest -m PIMs -u '30 +north' -i 2000 -c Fraser -t mycsv.csv"
+      echo "Usage: mspec_sfm.sh -e tif -a Ortho -m Malt -u '30 +north' -c Fraser -t mycsv.csv"
       echo "-e EXTENSION     : image file type (JPG, jpg, TIF, png..., default=JPG)."
       echo "-a Algorithm     : type of algorithm eg Ortho, UrbanMNE for Malt or MicMac, BigMac, QuickMac, Forest, Statue "
       echo "-c CALIB         : Camera calibration model - e.g. RadialBasic, Fraser etc"
       echo "-m MODE          : Either Malt or PIMs - mandatory"
       echo "-u UTMZONE       : UTM Zone of area of interest. Takes form 'NN +north(south)'"
       echo "-i SIZE          : image resize for processing (OPTIONAL, but recommend half long axis of image) "  
-      echo "-t CSV           : Optional (no need if using exif GPS) - text file usually csv with mm3d formatting with image names and gps coords "          
+      echo "-t CSV           : Optional (no need if using exif GPS) - text file usually csv with mm3d formatting with image names and gps coords"          
       echo "-h	             : displays this message and exits."
       echo " "
       exit 0 
@@ -55,7 +55,7 @@ done
 
 shift $((OPTIND-1))
 
-echo "params chosen are: -e ${EXTENSION} -a ${Algorithm} -c ${CALIB} -m ${MODE} -u ${UTM} -i ${SIZE} -c ${CSV}"
+echo "params chosen are: -e ${EXTENSION} -a ${Algorithm} -c ${CALIB} -m ${MODE} -u ${UTM} -i ${SIZE} -c ${CALIB}" -t ${CSV}
  
 
 
@@ -85,10 +85,11 @@ if [  -f "${CSV}" ]; then
     sysCort_make.py -csv ${CSV} -d " "  
 else 
     echo "using exif data"
-    mm3d XifGps2Txt .*${EXTENSION} 
-    #Get the GNSS data out of the images and convert it to a xml orientation folder (Ori-RAWGNSS), also create a good RTL (Local Radial Tangential) system.
-    mm3d XifGps2Xml .*${EXTENSION} RAWGNSS_N
-    mm3d OriConvert "#F=N X Y Z" GpsCoordinatesFromExif.txt RAWGNSS_N ChSys=DegreeWGS84@RTLFromExif.xml MTD1=1 NameCple=FileImagesNeighbour.xml CalcV=1
+    mm3d XifGps2Txt .*${EXTENSION}
+    # here as the transform always screws up with xml
+    sed -i '1s/^/#F=N X Y Z\n/' GpsCoordinatesFromExif.txt 
+    mm3d OriConvert OriTxtInFile GpsCoordinatesFromExif.txt RAWGNSS_N ChSys=DegreeWGS84@SysUTM.xml MTD1=1  NameCple=FileImagesNeighbour.xml CalcV=1
+    sysCort_make.py -csv GpsCoordinatesFromExif.txt -d " "
 fi 
 
 
@@ -126,32 +127,32 @@ mm3d AperiCloud .*${EXTENSION} Ori-Ground_Init_RTL
 
 #Bundle adjust using both camera positions and tie points (number in EmGPS option is the quality estimate of the GNSS data in meters)
 #Change system to final cartographic system  
-if [  -n "${CSV}" ]; then 
-    mm3d Campari .*${EXTENSION} Ground_Init_RTL Ground_UTM EmGPS=[RAWGNSS_N,1] AllFree=1  | tee ${CALIB}GnssBundle.txt
-else
-    mm3d Campari .*${EXTENSION} Ground_Init_RTL Ground_RTL EmGPS=[RAWGNSS_N,1] AllFree=1 | tee ${CALIB}GnssBundle.txt
-    mm3d ChgSysCo  .*${EXTENSION} Ground_RTL RTLFromExif.xml@SysUTM.xml Ground_UTM
-    mm3d OriExport Ori-Ground_UTM/.*xml CameraPositionsUTM.txt AddF=1
-fi
+
+mm3d Campari .*${EXTENSION} Ground_Init_RTL Ground_UTM EmGPS=[RAWGNSS_N,1] AllFree=1  | tee ${CALIB}GnssBundle.txt
+
 
 mm3d AperiCloud .*${EXTENSION} Ground_UTM
 
 
-dense_cloud.sh -e ${EXTENSION} -a ${Algorithm} -m ${MODE} -x 1
+dense_cloud.sh -e ${EXTENSION} -a ${Algorithm} -m ${MODE} -u ${UTM} -x 1  
 
 mv *.tif RGB
 
 mv OUTPUT/OrthoImage_geotif.tif OUTPUT/RGB.tif
+mv OUTPUT/PointCloud_OffsetUTM.ply OUTPUT/RGB.ply
 rm -rf OUTPUT/OrthoImage_geotif.tif
+rm -rf OUTPUT/PointCloud_OffsetUTM.ply
 
 mv RRENir/*.tif $PWD
 
-dense_cloud.sh -e ${EXTENSION} -a ${Algorithm} -m ${MODE}  -x 0
+dense_cloud.sh -e ${EXTENSION} -a ${Algorithm} -m ${MODE} -u ${UTM} -x 0
 
 mv *.tif RRENir
 
-mv OUTPUT/OrthoImage_geotif.tif OUTPUT/RReNir.tif
+mv OUTPUT/OrthoImage_geotif.tif OUTPUT/RRENir.tif
+mv OUTPUT/PointCloud_OffsetUTM.ply OUTPUT/RRENir.ply
 rm -rf OUTPUT/OrthoImage_geotif.tif
+rm -rf OUTPUT/PointCloud_OffsetUTM.ply
 
 echo "results in the output folder" 
 

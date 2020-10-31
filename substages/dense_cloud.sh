@@ -9,7 +9,7 @@
 
 
 
-while getopts ":e:a:m:u:r:o:x:h:" x; do
+while getopts ":e:a:m:u:o:x:h:" x; do
   case $x in
     h) 
       echo "Process dense cloud using either PIMs or Malt."
@@ -19,7 +19,6 @@ while getopts ":e:a:m:u:r:o:x:h:" x; do
       echo "-m MODE          : Either Malt or PIMs - mandatory"
       echo "-u UTMZONE       : UTM Zone of area of interest. Takes form 'NN +north(south)'"
       echo "-n CORE          : Number of cores to use - likely best to stick with physical ones"
-      echo "-r zreg          : zreg term - context dependent "     
       echo "-o orth          : do ortho -True or False "  
       echo "-x dsm        : do DSM -True or False "          
       echo "-h	             : displays this message and exits."
@@ -37,9 +36,6 @@ while getopts ":e:a:m:u:r:o:x:h:" x; do
       ;;
 	u)
       UTM=$OPTARG
-      ;;
-    r)
-      zreg=$OPTARG
       ;;
     o)
       orth=$OPTARG
@@ -75,7 +71,7 @@ shift $((OPTIND-1))
 #    -r : zreg term - context dependent $zreg    
 #    -o : do ortho -True or False  $orth
   
-echo "If you choose to run, a gui will appear and you will be required to 
+echo "If you choose to run PIMs, a gui will appear and you will be required to 
     draw a mask round the point cloud to delimit the processing.
     Press F9 to begin drawing the polyline and space bar to confirm the selection.
     Ctrl-S to save the selection the close the GUI." 
@@ -97,14 +93,14 @@ echo "If you choose to run, a gui will appear and you will be required to
 #	   " >&1
 #	   exit 1 ;;
  #       * ) echo "
-		Only 0 or 1 are valid choices
-		For help use : dense_cloud.sh -h
+#		Only 0 or 1 are valid choices
+#		For help use : dense_cloud.sh -h
 #		" >&1
 #		exit 1 ;;
 #    esac
 #done
 
-
+echo "params chosen are: -e ${EXTENSION} -a ${Algorithm} -m ${MODE} -u ${UTM}" 
 
 mkdir OUTPUT
 
@@ -149,7 +145,7 @@ if [[ "$MODE" = "PIMs" ]]; then
 else
     echo "Using Malt Algorithm"
     # Here we find the physical CPU count to avoid thread errors in cmake
-    CpuCount=($(lscpu -p | egrep -v '^#' | sort -u -t, -k 2,4 | wc -l))
+    #CpuCount=($(lscpu -p | egrep -v '^#' | sort -u -t, -k 2,4 | wc -l))
     
 
         
@@ -157,7 +153,7 @@ else
 	
 	mm3d Malt $Algorithm ".*.$EXTENSION" Ground_UTM UseGpu=0 EZA=1 DoOrtho=1 DefCor=0 DoMEC=$dsm 
 
-    mm3d Tawny Ortho-MEC-Malt RadiomEgal=1
+        mm3d Tawny Ortho-MEC-Malt RadiomEgal=1
 
 	mm3d Nuage2Ply MEC-Malt/NuageImProf_STD-MALT_Etape_8.xml Attr=Ortho-MEC-Malt/Orthophotomosaic.tif Out=OUTPUT/PointCloud_OffsetUTM.ply 64B=1
 
