@@ -9,7 +9,7 @@ while getopts ":e:a:c:m:u:i:t:h:" x; do
   case $x in
     h) 
       echo "Complete SfM process outputting DSM, Ortho-Mosaic and Point Cloud."
-      echo "Usage: sfm.sh -e JPG -a Forest -m PIMs -u '30 +north' -q 1 -d 1 -i 2000 -c mycsv.csv"
+      echo "Usage: sfm.sh -e JPG -a Forest -m PIMs -u '30 +north' -i 2000 -c Fraser"
       echo "-e EXTENSION     : image file type (JPG, jpg, TIF, png..., default=JPG)."
       echo "-a Algorithm     : type of algorithm eg Ortho, UrbanMNE for Malt or MicMac, BigMac, QuickMac, Forest, Statue "
       echo "-c CALIB         : Camera calibration model - e.g. RadialBasic, Fraser etc"
@@ -83,10 +83,11 @@ if [  -f "${CSV}" ]; then
     sysCort_make.py -csv ${CSV} -d " "  
 else 
     echo "using exif data"
-    mm3d XifGps2Txt .*${EXTENSION} 
-    #Get the GNSS data out of the images and convert it to a xml orientation folder (Ori-RAWGNSS), also create a good RTL (Local Radial Tangential) system.
-    mm3d XifGps2Xml .*${EXTENSION} RAWGNSS_N
-    mm3d OriConvert "#F=N X Y Z" GpsCoordinatesFromExif.txt RAWGNSS_N ChSys=DegreeWGS84@RTLFromExif.xml MTD1=1 NameCple=FileImagesNeighbour.xml CalcV=1
+    mm3d XifGps2Txt .*${EXTENSION}
+    # here as the transform always screws up with xml
+    sed -i '1s/^/#F=N X Y Z\n/' GpsCoordinatesFromExif.txt 
+    mm3d OriConvert OriTxtInFile GpsCoordinatesFromExif.txt RAWGNSS_N ChSys=DegreeWGS84@SysUTM.xml MTD1=1  NameCple=FileImagesNeighbour.xml CalcV=1
+    sysCort_make.py -csv GpsCoordinatesFromExif.txt -d " "
 fi 
 
 
