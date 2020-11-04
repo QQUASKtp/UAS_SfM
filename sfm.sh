@@ -5,7 +5,7 @@
 
 #https://github.com/Ciaran1981/Sfm
 
-while getopts ":e:a:c:m:u:q:d:i:t:h:" x; do
+while getopts ":e:a:c:m:u:i:t:h:" x; do
   case $x in
     h) 
       echo "Complete SfM process outputting DSM, Ortho-Mosaic and Point Cloud."
@@ -15,8 +15,6 @@ while getopts ":e:a:c:m:u:q:d:i:t:h:" x; do
       echo "-c CALIB         : Camera calibration model - e.g. RadialBasic, Fraser etc"
       echo "-m MODE          : Either Malt or PIMs - mandatory"
       echo "-u UTMZONE       : UTM Zone of area of interest. Takes form 'NN +north(south)'"
-      echo "-q egal          : radiometric eq (See mm3d Tawny)"
-      echo "-d DEQ           : Degree of radiometric eq between images during mosaicing (See mm3d Tawny)" 
       echo "-i SIZE          : image resize for processing (OPTIONAL, but recommend half long axis of image) "  
       echo "-t CSV           : Optional (no need if using exif GPS) - text file usually csv with mm3d formatting with image names and gps coords "          
       echo "-h	             : displays this message and exits."
@@ -37,12 +35,6 @@ while getopts ":e:a:c:m:u:q:d:i:t:h:" x; do
       ;;  
 	u)
       UTM=$OPTARG
-      ;;
-	q)
-      egal=$OPTARG
-      ;;
-	d)
-      DEQ=$OPTARG  
       ;;
  	i)
       SIZE=${OPTARG}
@@ -142,7 +134,7 @@ fi
 
 mm3d AperiCloud .*${EXTENSION} Ground_UTM
 
-dense_cloud.sh -e ${EXTENSION} -a ${Algorithm} -m ${MODE} -i ${egal} -d ${DEQ} -o 1
+dense_cloud.sh -e ${EXTENSION} -a ${Algorithm} -m ${MODE}  -o 1
 
 
 ##################################################################################################################################################
