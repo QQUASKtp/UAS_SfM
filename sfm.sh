@@ -55,7 +55,7 @@ done
 
 shift $((OPTIND-1))
 
-echo "params chosen are: -e ${EXTENSION} -a ${Algorithm} -c ${CALIB} -m ${MODE} -u ${UTM} -q ${egal} -d ${DEQ} -i ${SIZE} -c ${CSV}"
+echo "params chosen are: -e ${EXTENSION} -a ${Algorithm} -c ${CALIB} -m ${MODE} -u ${UTM} -i ${SIZE} -c ${CSV}"
  
 
 
