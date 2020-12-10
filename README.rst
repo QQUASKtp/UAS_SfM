@@ -48,7 +48,7 @@ Sfm requires:
 
 - GNU/Linux or Mac OS for full functionality (python scripts are not platform dependent)
 
-- Python 3
+- Python 3 (TQDM, GDAL, GLOB2, PANDAS) if in doubt look at the script imports. 
 
 - MicMac
 
@@ -65,6 +65,8 @@ Dependency installation
 See MicMac install instructions here:
 
 https://micmac.ensg.eu/index.php/Install
+
+BEST TO STICK WITH CPU ONLY, WITH THE LINK TO INSTALL INTRUCTIONS ABOVE. UNLESS IF FOR SOME REASON YOU WISH TO TINKER WITH GPU/MICMAC CUDA CODE OR SEE GPUS WORKING DO NOT BOTHER WITH THE BELOW MATERIAL ON GPU USE.
 
 **If you have a lot of CPU cores, it is almost always better not to bother with GPU aided processing on MicMac in its current state as with lots of jobs/images it will overload the GPU memory.**
 
@@ -98,7 +100,7 @@ With reference to GPU supported compilation specifically, the following may help
 
 **OSSIM**
 
-Install OSSIM via tha ubuntu GIS or equivalent repo 
+Optionally used for feather mosaiking but not mandatory. Install OSSIM via tha ubuntu GIS or equivalent repo 
 
 - Ensure the OSSIM preferences file is on you path, otherwise it will not recognise different projections
 
